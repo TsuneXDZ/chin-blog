@@ -1,0 +1,40 @@
+---
+// COMPONENTS
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BlogPost from '../../components/BlogPost.astro';
+
+export async function getStaticPaths() {
+    // 此处获取文章文件并将其中的tag归成一个数组返回给uniqueTags.
+    const allPosts = await Astro.glob("../posts/*.md");
+    const uniqueTags = [...new Set(allPosts.map((post) => post.frontmatter.tags).flat())];
+
+    // getStaticPaths函数需要返回一个包含params(路由地址)的对象,此处根据tag返回对应的路由界面.
+    // 例如传入的tag="astro" 将/tag/astro路由加入,判断所有Post.tag 是否与aster相等,并返回至filteredPosts.
+    return uniqueTags.map((tag) => {
+        const filteredPosts = allPosts.filter((post) => post.frontmatter.tags.includes(tag));
+        return {
+          //两个参数,params表示路由地址,props表示页面.
+            params: { tag },
+            props: { posts: filteredPosts },
+        };
+    });
+}
+
+const { tag } = Astro.params;
+const {posts} = Astro.props;
+
+---
+<!-- HTML -->
+<BaseLayout pageTitle={tag}>
+  <p>关于<span class="tag">{tag}</span>的文章</p>
+
+  <!-- 使用BlogPost组件,表示提取包含tab的a标签. -->
+  {posts.length > 0 ?(
+    <ul>
+        {posts.map((post) => <BlogPost url={post.url} title={post.frontmatter.title}/>)}
+    </ul>
+  ):(
+    <p>没有相应的文章。</p>
+  )
+  }
+</BaseLayout>

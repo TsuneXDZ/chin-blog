@@ -20,6 +20,12 @@ h1 {
     font-size: 2.5rem;
 }
 
+/* ?自定义 */
+.tag{
+    font-weight: bold;
+    color: #0b0ecff5;
+}
+
 /* 导航样式 */
 .hamburger {
     padding-right: 20px;
